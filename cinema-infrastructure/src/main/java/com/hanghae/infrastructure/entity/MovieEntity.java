@@ -2,6 +2,8 @@ package com.hanghae.infrastructure.entity;
 
 import com.hanghae.domain.model.enums.MovieGenre;
 import com.hanghae.domain.model.enums.MovieRating;
+import com.hanghae.infrastructure.converter.MovieGenreConverter;
+import com.hanghae.infrastructure.converter.MovieRatingConverter;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -31,7 +33,7 @@ public class MovieEntity {
     @Column(nullable = false)
     private String title; // 영화 제목
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = MovieRatingConverter.class) //enum > db코드 변환
     @Column(nullable = false)
     private MovieRating rating; // 영상물 등급 ID
 
@@ -39,9 +41,9 @@ public class MovieEntity {
     private LocalDate releaseDate; // 개봉일
 
     @Column(nullable = false)
-    private Long runningTime; // 러닝 타임(분)
+    private Long runningTimeMinutes; // 러닝 타임(분)
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = MovieGenreConverter.class) //enum > db코드 변환
     @Column(nullable = false)
     private MovieGenre genre; // 영화 장르 ID
 
@@ -64,12 +66,12 @@ public class MovieEntity {
     private LocalDateTime updatedAt; //수정일
 
     @Builder
-    public MovieEntity(Long id, String title, MovieRating rating, LocalDate releaseDate, Long runningTime, MovieGenre genre, UploadFileEntity uploadFileEntity, Long createdBy, LocalDateTime createdAt, Long updatedBy, LocalDateTime updatedAt) {
+    public MovieEntity(Long id, String title, MovieRating rating, LocalDate releaseDate, Long runningTimeMinutes, MovieGenre genre, UploadFileEntity uploadFileEntity, Long createdBy, LocalDateTime createdAt, Long updatedBy, LocalDateTime updatedAt) {
         this.id = id;
         this.title = title;
         this.rating = rating;
         this.releaseDate = releaseDate;
-        this.runningTime = runningTime;
+        this.runningTimeMinutes = runningTimeMinutes;
         this.genre = genre;
         this.uploadFileEntity = uploadFileEntity;
         this.createdBy = createdBy;

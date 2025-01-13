@@ -7,19 +7,17 @@ import com.hanghae.domain.model.ScreeningSchedule;
 import com.hanghae.infrastructure.entity.ScreeningScheduleEntity;
 import com.hanghae.infrastructure.mapper.UploadFileMapper;
 import com.hanghae.infrastructure.repository.ScreeningScheduleRepositoryJpa;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class ScreeningScheduleRepositoryAdapter implements ScreeningScheduleRepositoryPort {
 
     private final ScreeningScheduleRepositoryJpa repository;
-
-    public ScreeningScheduleRepositoryAdapter(ScreeningScheduleRepositoryJpa repository) {
-        this.repository = repository;
-    }
 
     @Override
     public List<ScreeningSchedule> findAll() {
@@ -31,7 +29,7 @@ public class ScreeningScheduleRepositoryAdapter implements ScreeningScheduleRepo
                         entity.getMovieEntity().getTitle(),
                         entity.getMovieEntity().getRating(),
                         entity.getMovieEntity().getReleaseDate(),
-                        entity.getMovieEntity().getRunningTime(),
+                        entity.getMovieEntity().getRunningTimeMinutes(),
                         entity.getMovieEntity().getGenre(),
                         UploadFileMapper.toDomain(entity.getMovieEntity().getUploadFileEntity()),
                         entity.getMovieEntity().getCreatedBy(),

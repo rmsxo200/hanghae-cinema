@@ -29,10 +29,15 @@ public class ScreeningSchedule {
         this.updatedAt = updatedAt;
 
         // 개봉일 검증 로직
-        validateReleaseDate(movie.getReleaseDate());
+        validateReleaseDate(movie.getReleaseDate(), showStartDatetime);
     }
 
-    public void validateReleaseDate(LocalDate releaseDate) {
+    // 패키지 범위 setter: 외부에서는 호출 불가
+    void setShowStartDatetime(LocalDateTime showStartDatetime) {
+        validateReleaseDate(movie.getReleaseDate(), showStartDatetime);
+    }
+
+    public void validateReleaseDate(LocalDate releaseDate, LocalDateTime showStartDatetime) {
         if (showStartDatetime.toLocalDate().isBefore(releaseDate)) {
             throw new IllegalArgumentException("상영 날짜는 개봉일보다 이전일 수 없습니다.");
         }

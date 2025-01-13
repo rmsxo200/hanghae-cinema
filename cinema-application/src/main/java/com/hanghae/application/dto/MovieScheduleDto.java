@@ -8,7 +8,7 @@ public record MovieScheduleDto(
         String rating, //영상물 등급
         LocalDate releaseDate, //개봉일
         String thumbnailPath, // 썸네일 경로
-        Long runningTime, // 러닝타임(분)
+        Long runningTimeMinutes, // 러닝타임(분)
         String genre, // 영화 장르
         String screenName, // 상영관 이름
         LocalDateTime showStartDatetime // 상영시작시간
