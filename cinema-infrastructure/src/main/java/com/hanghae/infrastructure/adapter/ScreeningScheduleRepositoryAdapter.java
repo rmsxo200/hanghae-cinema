@@ -21,8 +21,13 @@ public class ScreeningScheduleRepositoryAdapter implements ScreeningScheduleRepo
 
     @Override
     public List<ScreeningSchedule> findAll() {
-        // jpa 엔티티 > 도메인 모델로 변환하여 리턴
-        return repository.findAll().stream().map(entity -> new ScreeningSchedule(
+        return repository.findAll().stream()
+                .map(this::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    private ScreeningSchedule toDomain(ScreeningScheduleEntity entity) {
+        return new ScreeningSchedule(
                 entity.getId(),
                 new Movie(
                         entity.getMovieEntity().getId(),
@@ -45,11 +50,11 @@ public class ScreeningScheduleRepositoryAdapter implements ScreeningScheduleRepo
                         entity.getScreenEntity().getUpdatedBy(),
                         entity.getScreenEntity().getUpdatedAt()
                 ),
-                entity.getShowStartDatetime(),
+                entity.getShowStartAt(),
                 entity.getCreatedBy(),
                 entity.getCreatedAt(),
                 entity.getUpdatedBy(),
                 entity.getUpdatedAt()
-        )).collect(Collectors.toList());
+        );
     }
 }

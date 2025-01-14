@@ -25,7 +25,7 @@ CREATE TABLE screening_schedule (
 	schedule_id	INT UNSIGNED	AUTO_INCREMENT PRIMARY KEY COMMENT '상영시간표 ID',
 	movie_id	INT UNSIGNED	NOT NULL COMMENT '영화 ID',
 	screen_id	INT UNSIGNED	NOT NULL COMMENT '싱영관 ID',
-	show_start_datetime	datetime	NULL COMMENT '상영시작시간',
+	show_start_at	datetime	NULL COMMENT '상영시작시간',
 	created_by	INT UNSIGNED	NULL COMMENT '작성자',
 	created_at	datetime	NULL COMMENT '작성일',
 	updated_by	INT UNSIGNED	NULL COMMENT '수정자',

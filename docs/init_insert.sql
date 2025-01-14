@@ -16,11 +16,11 @@ VALUES ('1관', 99, NOW());
 INSERT INTO screen (screen_name, created_by, created_at)
 VALUES ('2관', 99, NOW());
 
-INSERT INTO screening_schedule (movie_id, screen_id, show_start_datetime, created_by, created_at)
+INSERT INTO screening_schedule (movie_id, screen_id, show_start_at, created_by, created_at)
 VALUES (1, 1, '2025-01-13 10:50:00', 99, NOW());
 
-INSERT INTO screening_schedule (movie_id, screen_id, show_start_datetime, created_by, created_at)
+INSERT INTO screening_schedule (movie_id, screen_id, show_start_at, created_by, created_at)
 VALUES (2, 2, '2025-01-13 12:00:00', 99, NOW());
 
-INSERT INTO screening_schedule (movie_id, screen_id, show_start_datetime, created_by, created_at)
+INSERT INTO screening_schedule (movie_id, screen_id, show_start_at, created_by, created_at)
 VALUES (3, 1, '2025-01-13 13:20:00', 99, NOW());

@@ -1,6 +1,6 @@
 package com.hanghae.application.service;
 
-import com.hanghae.application.dto.MovieScheduleDto;
+import com.hanghae.application.dto.MovieScheduleResponseDto;
 import com.hanghae.application.port.in.MovieScheduleService;
 import com.hanghae.application.port.out.ScreeningScheduleRepositoryPort;
 import com.hanghae.domain.model.Movie;
@@ -21,7 +21,7 @@ public class MovieScheduleServiceImpl implements MovieScheduleService {
 
     @Override
     @Transactional
-    public List<MovieScheduleDto> getMovieSchedules() {
+    public List<MovieScheduleResponseDto> getMovieSchedules() {
         List<ScreeningSchedule> schedules = repositoryPort.findAll();
 
         return schedules.stream()
@@ -29,11 +29,11 @@ public class MovieScheduleServiceImpl implements MovieScheduleService {
                 .collect(Collectors.toList());
     }
 
-    private MovieScheduleDto convertToDto(ScreeningSchedule schedule) {
+    private MovieScheduleResponseDto convertToDto(ScreeningSchedule schedule) {
         Movie movie = schedule.getMovie();
         String thumbnailPath = getThumbnailPath(movie.getUploadFile());
 
-        return new MovieScheduleDto(
+        return new MovieScheduleResponseDto(
                 movie.getTitle(),
                 movie.getRating().getCodeName(),
                 movie.getReleaseDate(),
@@ -41,7 +41,7 @@ public class MovieScheduleServiceImpl implements MovieScheduleService {
                 movie.getRunningTimeMinutes(),
                 movie.getGenre().getCodeName(),
                 schedule.getScreen().getScreenName(),
-                schedule.getShowStartDatetime()
+                schedule.getShowStartAt()
         );
     }
 

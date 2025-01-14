@@ -30,9 +30,7 @@ public class MovieMapper {
                 .genre(movie.getGenre())
                 .uploadFileEntity(UploadFileMapper.toEntity(movie.getUploadFile()))
                 .createdBy(movie.getCreatedBy())
-                .createdAt(movie.getCreatedAt())
                 .updatedBy(movie.getUpdatedBy())
-                .updatedAt(movie.getUpdatedAt())
                 .build();
         return movieEntity;
     }

@@ -24,7 +24,7 @@ import java.time.LocalDateTime;
 @DynamicUpdate
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name= "movie")
-public class MovieEntity {
+public class MovieEntity extends BaseEntity {
     @Id
     @Column(name = "movie_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,22 +51,8 @@ public class MovieEntity {
     @JoinColumn(name = "file_id")
     private UploadFileEntity uploadFileEntity; // 업로드 파일 (썸네일)
 
-    @Column
-    private Long createdBy; // 작성자 ID
-
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt; // 작성일
-
-    @Column
-    private Long updatedBy; // 수정자 ID
-
-    @UpdateTimestamp
-    @Column(insertable = false)
-    private LocalDateTime updatedAt; //수정일
-
     @Builder
-    public MovieEntity(Long id, String title, MovieRating rating, LocalDate releaseDate, Long runningTimeMinutes, MovieGenre genre, UploadFileEntity uploadFileEntity, Long createdBy, LocalDateTime createdAt, Long updatedBy, LocalDateTime updatedAt) {
+    public MovieEntity(Long id, String title, MovieRating rating, LocalDate releaseDate, Long runningTimeMinutes, MovieGenre genre, UploadFileEntity uploadFileEntity, Long createdBy, Long updatedBy) {
         this.id = id;
         this.title = title;
         this.rating = rating;
@@ -74,9 +60,7 @@ public class MovieEntity {
         this.runningTimeMinutes = runningTimeMinutes;
         this.genre = genre;
         this.uploadFileEntity = uploadFileEntity;
-        this.createdBy = createdBy;
-        this.createdAt = createdAt;
-        this.updatedBy = updatedBy;
-        this.updatedAt = updatedAt;
+        this.setCreatedBy(createdBy);
+        this.setUpdatedBy(updatedBy);
     }
 }

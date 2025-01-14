@@ -1,6 +1,6 @@
 package com.hanghae.adapter.web;
 
-import com.hanghae.application.dto.MovieScheduleDto;
+import com.hanghae.application.dto.MovieScheduleResponseDto;
 import com.hanghae.application.port.in.MovieScheduleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +14,7 @@ public class MovieController {
     private final MovieScheduleService movieScheduleService;
 
     @GetMapping("/api/v1/movie-schedules")
-    public List<MovieScheduleDto> getMovieSchedules() {
+    public List<MovieScheduleResponseDto> getMovieSchedules() {
         return movieScheduleService.getMovieSchedules();
     }
 }
