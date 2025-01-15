@@ -21,11 +21,11 @@ public class ShowingMovieScheduleResponseDto {
     private final List<Schedule> schedules = new ArrayList<>();
 
     @Builder
-    public ShowingMovieScheduleResponseDto(Long movieId, String title, String rating, Date releaseDate, String thumbnail, Long runningTimeMinutes, String genre) {
+    public ShowingMovieScheduleResponseDto(Long movieId, String title, String rating, LocalDate releaseDate, String thumbnail, Long runningTimeMinutes, String genre) {
         this.movieId = movieId;
         this.title = title; //영화 제목
         this.rating = rating; // 영상물 등급
-        this.releaseDate = releaseDate.toLocalDate(); // 개봉일
+        this.releaseDate = releaseDate; // 개봉일
         this.thumbnail = thumbnail; // 썸네일
         this.runningTimeMinutes = runningTimeMinutes; // 상영시간(분)
         this.genre = genre; // 영화 장르
@@ -39,7 +39,7 @@ public class ShowingMovieScheduleResponseDto {
     @Builder
     public static class Schedule {
         private final String screenName; // 상영관 이름
-        private final String showStartAt; // 상영 시작 시간
-        private final String showEndAt; // 상영 종료 시간
+        private final LocalDateTime showStartAt; // 상영 시작 시간
+        private final LocalDateTime showEndAt; // 상영 종료 시간
     }
 }
