@@ -3,16 +3,15 @@ package com.hanghae.infrastructure.adapter;
 import com.hanghae.application.dto.MovieScheduleRequestDto;
 import com.hanghae.application.port.out.MovieRepositoryPort;
 import com.hanghae.application.projection.MovieScheduleProjection;
-import com.hanghae.infrastructure.entity.QMovieEntity;
-import com.hanghae.infrastructure.entity.QScreenEntity;
-import com.hanghae.infrastructure.entity.QScreeningScheduleEntity;
-import com.hanghae.infrastructure.entity.QUploadFileEntity;
+import com.hanghae.infrastructure.entity.*;
 import com.hanghae.infrastructure.repository.MovieRepositoryJpa;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -23,6 +22,11 @@ import java.util.List;
 public class MovieRepositoryAdapter implements MovieRepositoryPort {
     private final JPAQueryFactory queryFactory;
 
+    /**
+     * 영화별 상영시간표 그룹핑하여 조회
+     * showing_movies
+     */
+    @Cacheable(value = "showing_movie_schedules", key = "#requestDto?.title + '_' + #requestDto?.genre", unless = "#result == null or #result.isEmpty()")
     @Override
     public List<MovieScheduleProjection> findShowingMovieSchedules(MovieScheduleRequestDto requestDto) {
         QMovieEntity movie = QMovieEntity.movieEntity;
@@ -62,5 +66,13 @@ public class MovieRepositoryAdapter implements MovieRepositoryPort {
                 .where(builder)
                 .orderBy(movie.releaseDate.desc(), schedule.showStartAt.asc())
                 .fetch();
+    }
+
+    /**
+     * 영화별 상영시간표 그룹핑 캐시 삭제
+     */
+    @CacheEvict(value = "showing_movie_schedules", allEntries = true)
+    public void evictShowingMovieCache() {
+        // 캐시를 강제로 삭제
     }
 }
