@@ -29,6 +29,11 @@ public class MovieRepositoryAdapter implements MovieRepositoryPort {
     @Cacheable(value = "showing_movie_schedules", key = "#requestDto?.title + '_' + #requestDto?.genre", unless = "#result == null or #result.isEmpty()")
     @Override
     public List<MovieScheduleProjection> findShowingMovieSchedules(MovieScheduleRequestDto requestDto) {
+        // @Cacheable 사용으로 캐시를 사용한다.
+        // * 캐시이름 : showing_movie_schedules
+        // * 캐시키 : requestDto.title_requestDto.genre
+        // * 제외조건 : 하단 DB조회 결과가 null 또는 존재하지 않으면(isEmpty) 저장 안함
+        // 캐시에 존재하지 않으면 아래 로직을 실행한다.
         QMovieEntity movie = QMovieEntity.movieEntity;
         QScreeningScheduleEntity schedule = QScreeningScheduleEntity.screeningScheduleEntity;
         QScreenEntity screen = QScreenEntity.screenEntity;
