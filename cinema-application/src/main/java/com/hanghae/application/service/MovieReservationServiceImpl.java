@@ -31,43 +31,36 @@ public class MovieReservationServiceImpl implements MovieReservationService {
     @Override
     @Transactional
     public ApiResponse<Void> saveMovieReservation(MovieReservationRequestDto requestDto) {
-        int seatCount = requestDto.seatCount();
-        ScreenSeat screenSeat = requestDto.screenSeat();
         Long scheduleId = requestDto.scheduleId();
         Long memberId = requestDto.memberId();
+        int seatCount = requestDto.seatCount();
+        ScreenSeat screenSeat = requestDto.screenSeat();
 
-        //영화 스케줄 가져오기
+        // 영화 스케줄 가져오기
         ScreeningSchedule screeningSchedule = screeningScheduleRepositoryPort.findById(scheduleId);
+        // 회원정보 조회
         Member member = memberRepositoryPort.findById(memberId);
+        // 선택 상영관 좌석 최대값 가져오기
+        ScreenSeatLayout screenSeatLayout = screenSeatLayoutRepositoryPort.findBySeatRowAndScreenId(screenSeat.getSeatRow(), screeningSchedule.getScreen().getScreenId());
 
-        // 예매내역 조회
+        // 해당 회원의 예매내역 조회
         int reservedTicketCount = ticketReservationRepositoryPort.countByScreeningScheduleIdAndMemberId(scheduleId, memberId);
+        // 예매 내역 5개 초과 검증
+        reservationService.validateReservationSeatLimit(reservedTicketCount, seatCount);
 
-        //1인당 5개로 예매 제한하기
-        if (reservedTicketCount + seatCount > 5) {
-            throw new IllegalArgumentException("상영시간별 예매는 최대 5개까지 할 수 있습니다.");
-        }
+        // 예매할 좌석 목록 가져오기
+        List<ScreenSeat> selectedSeats = ScreenSeat.getSelectedConnectedSeats(screenSeat, seatCount);
+        // 예매하려는 좌석에 대한 예매내역 조회
+        int duplicateReservationCount = ticketReservationRepositoryPort.countByScheduleIdAndScreenSeats(scheduleId, selectedSeats);
+        // 예매 좌석 중복 내역 확인하기
+        reservationService.validateSeatAvailability(duplicateReservationCount);
 
-        //해당 상영관 좌석 최대값 가져오기
-        ScreenSeatLayout screenSeatLayout = screenSeatLayoutRepositoryPort.findBySeatRowAndScreenId(
-                screenSeat.getSeatRow(), screeningSchedule.getScreen().getScreenId());
+        // 예매 내역 생성
+        List<TicketReservation> ticketReservations = reservationService.createTicketReservations(screeningSchedule, member, screenSeat, screenSeatLayout, seatCount);
 
-        // 예매할 좌석 목록
-        List<ScreenSeat> selectedSeats = ScreenSeat.getSelectedConnectedSeats(requestDto.screenSeat(), seatCount);
+        // 예매 내역 저장
+        ticketReservationRepositoryPort.saveMovieReservations(ticketReservations);
 
-        // 중복 예매 내역 확인하기
-        int isDuplicateReservationCount = ticketReservationRepositoryPort.countByScheduleIdAndScreenSeats(scheduleId, selectedSeats);
-        if(isDuplicateReservationCount > 0) {
-            throw new IllegalArgumentException("선택 죄석은 이미 예매 되었습니다.");
-        }
-
-        // 선택 좌석기준으로 예약정보 생성
-        List<TicketReservation> ticketReservations =
-                reservationService.generateTicketReservationsBySeat(
-                        screeningSchedule, member, screenSeat, screenSeatLayout, seatCount);
-
-        //좌석 저장
-        //List<TicketReservation> savedTicketReservations = ticketReservationRepositoryPort.saveMovieReservations(ticketReservations);
-        return ApiResponse.of("Success", 201);
+        return ApiResponse.of("예매가 완료 되었습니다.", 201);
     }
 }
