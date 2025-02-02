@@ -89,27 +89,36 @@ class MovieReservationServiceImplTest {
 
     @Test
     @DisplayName("정상적인 예매 성공 테스트")
-    void testSaveMovieReservationSuccess() {
+    void saveMovieReservationSuccess() {
         ApiResponse<Void> response = movieReservationService.saveMovieReservation(requestDto);
+
+        // 응답 코드 비교
         assertEquals(HttpStatusCode.CREATED, response.status());
+
+        //ticketReservationRepositoryPort.saveMovieReservations 메서드가 1회 호출 되었는지 확인
         verify(ticketReservationRepositoryPort, times(1)).saveMovieReservations(anyList());
+
+        //messagePort.sendMessage 메서드가 1회 호출 되었는지 확인
         verify(messagePort, times(1)).sendMessage(anyString());
     }
 
     @Test
     @DisplayName("동일 시간대 예매 제한 초과 시 예외 처리 테스트")
-    void testSaveMovieReservationTooManyRequests() {
+    void saveMovieReservationTooManyRequests() {
         when(redisRateLimitPort.canReserve(anyLong(), anyLong())).thenReturn(false);
 
         ApiResponse<Void> response = movieReservationService.saveMovieReservation(requestDto);
+
+        // 응답 코드 확인
         assertEquals(HttpStatusCode.TOO_MANY_REQUESTS, response.status());
 
+        //ticketReservationRepositoryPort.saveMovieReservations 메서드가 호출 되지 않았는지 확인
         verify(ticketReservationRepositoryPort, never()).saveMovieReservations(anyList());
     }
 
     @Test
     @DisplayName("이미 예매된 좌석일 경우 예외 발생 테스트")
-    void testSaveMovieReservationSeatAlreadyReserved() {
+    void saveMovieReservationSeatAlreadyReserved() {
         when(ticketReservationRepositoryPort.countByScheduleIdAndScreenSeats(anyLong(), anyList())).thenReturn(1);
 
         //validateSeatAvailability 인자로 받은 값이 0보다 크면 예외처리, 아닐 경우 그냥 통과
@@ -124,12 +133,13 @@ class MovieReservationServiceImplTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
                 movieReservationService.saveMovieReservation(requestDto));
 
+        // 응답 메시지 비교
         assertEquals("선택한 좌석은 이미 예매되었습니다.", exception.getMessage());
     }
 
     @Test
     @DisplayName("예매좌석 5개 초과시 예외 발생 테스트")
-    void testSaveMovieReservationSeatLimitExceeded() {
+    void saveMovieReservationSeatLimitExceeded() {
         when(ticketReservationRepositoryPort.countByScreeningScheduleIdAndMemberId(anyLong(), anyLong())).thenReturn(5);
 
         //validateReservationSeatLimit 인자로 받은 값의 합이 5보다 크면 예외처리, 아닐 경우 그냥 통과
@@ -148,12 +158,13 @@ class MovieReservationServiceImplTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
                 movieReservationService.saveMovieReservation(requestDto));
 
+        // 응답 메시지 확인
         assertEquals("상영시간별 예매는 최대 5개까지 할 수 있습니다.", exception.getMessage());
     }
 
     @Test
     @DisplayName("Redisson Lock을 획득하지 못했을 경우 예외 처리 테스트")
-    void testSaveMovieReservationLockFailed() {
+    void saveMovieReservationLockFailed() {
         // 기존 Mock 설정 제거
         Mockito.reset(redissonLockPort);
 
@@ -163,6 +174,7 @@ class MovieReservationServiceImplTest {
 
         ApiResponse<Void> response = movieReservationService.saveMovieReservation(requestDto);
 
+        // 응답 코드 확인
         assertEquals(HttpStatusCode.CONFLICT, response.status());
     }
 }

@@ -46,7 +46,7 @@ class ReservationControllerTest {
 
     @Test
     @DisplayName("[통합] 정상적인 영화 예매 요청 테스트")
-    void testSaveMovieReservationSuccess() throws Exception {
+    void saveMovieReservationSuccess() throws Exception {
         // When & Then
         mockMvc.perform(post("/api/v1/movie-reservation")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -57,14 +57,14 @@ class ReservationControllerTest {
 
     @Test
     @DisplayName("[통합] 5분내 동일 일정 영화 예매 예외 발생 테스트")
-    void testSaveMovieReservation_TooManyRequests() throws Exception {
+    void saveMovieReservationTooManyRequests() throws Exception {
         // 1번 요청을 먼저 수행하여 Redis Rate Limit를 초과시키기
         mockMvc.perform(post("/api/v1/movie-reservation")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto)))
                 .andExpect(status().isCreated());
 
-        // 5분 내 동일한 요청을 보내면 예외 발생
+        // 5분 내 동일한 요청을 보내면 예외 발생 확인
         mockMvc.perform(post("/api/v1/movie-reservation")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto)))
@@ -74,11 +74,11 @@ class ReservationControllerTest {
 
     @Test
     @DisplayName("[통합] 좌석이 이미 예매된 경우 예외 발생 테스트")
-    void testSaveMovieReservation_SeatAlreadyReserved() throws Exception {
+    void saveMovieReservation_SeatAlreadyReserved() throws Exception {
         //테스트 sql에서 미리 넣어둔 예매데이터와 동일한 좌석 세팅
         requestDto = TestDataFactory.createMovieReservationRequestDto("E", 1);
 
-        // 동일한 좌석을 다시 예매하면 예외 발생
+        // 동일한 좌석을 다시 예매하면 예외 발생 확인
         mockMvc.perform(post("/api/v1/movie-reservation")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto)))
@@ -87,12 +87,12 @@ class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("[통합] 좌석 개수 초과 예외 테스트")
-    void testSaveMovieReservation_SeatLimitExceeded() throws Exception {
-        // Given: 좌석 6개 초과 요청
+    @DisplayName("[통합] 회원당 예매 좌석 개수 초과시 예외 발생 테스트")
+    void saveMovieReservationSeatLimitExceeded() throws Exception {
+        //테스트 sql에서 미리 넣어둔 예매데이터 + 추가로 5좌석 예매
         MovieReservationRequestDto invalidRequest = TestDataFactory.createMovieReservationRequestDto(5);
 
-        // When & Then
+        // 좌석 5개 초과 예매 요청시 예외 발생 확인
         mockMvc.perform(post("/api/v1/movie-reservation")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidRequest)))
