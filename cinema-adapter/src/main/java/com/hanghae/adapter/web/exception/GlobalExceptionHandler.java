@@ -2,8 +2,8 @@ package com.hanghae.adapter.web.exception;
 
 import com.hanghae.application.dto.ApiResponse;
 import com.hanghae.application.enums.ErrorCode;
-import com.hanghae.application.exception.CustomRequestException;
-import com.hanghae.application.exception.CustomServerException;
+import com.hanghae.application.exception.ApplicationRequestException;
+import com.hanghae.application.exception.ApplicationServerException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,16 +35,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
     }
 
-    @ExceptionHandler(CustomRequestException.class)
-    public ResponseEntity<ApiResponse<Void>> handleCustomRequestException(CustomRequestException e) {
-        log.error("CustomRequestException occurred: {}", e.getMessage(), e);  // 로그 추가
+    @ExceptionHandler(ApplicationRequestException.class)
+    public ResponseEntity<ApiResponse<Void>> handleApplicationRequestException(ApplicationRequestException e) {
+        log.error("ApplicationRequestException occurred: {}", e.getMessage(), e);  // 로그 추가
         ApiResponse<Void> apiResponse = ApiResponse.of(e.getMessage(), e.getErrorCode());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
     }
 
-    @ExceptionHandler(CustomServerException.class)
-    public ResponseEntity<ApiResponse<Void>> handleCustomServerException(CustomServerException e) {
-        log.error("CustomServerException occurred: {}", e.getMessage(), e);  // 로그 추가
+    @ExceptionHandler(ApplicationServerException.class)
+    public ResponseEntity<ApiResponse<Void>> handleApplicationServerException(ApplicationServerException e) {
+        log.error("ApplicationServerException occurred: {}", e.getMessage(), e);  // 로그 추가
         ApiResponse<Void> apiResponse = ApiResponse.of(e.getMessage(), e.getErrorCode());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
     }

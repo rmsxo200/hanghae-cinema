@@ -3,7 +3,7 @@ package com.hanghae.application.service;
 import com.hanghae.application.dto.ApiResponse;
 import com.hanghae.application.dto.request.MovieReservationRequestDto;
 import com.hanghae.application.enums.ErrorCode;
-import com.hanghae.application.exception.CustomRequestException;
+import com.hanghae.application.exception.ApplicationRequestException;
 import com.hanghae.application.port.in.MovieReservationService;
 import com.hanghae.application.port.out.message.MessagePort;
 import com.hanghae.application.port.out.redis.RedisRateLimitPort;
@@ -70,7 +70,7 @@ public class MovieReservationServiceImpl implements MovieReservationService {
                 // 예매 내역 5개 초과 검증
                 reservationService.validateReservationSeatLimit(reservedTicketCount, seatCount);
             } catch (IllegalArgumentException e) { // 도메인 계층에서 발생한 오류 발생시 별도 처리
-                throw new CustomRequestException(e.getMessage(), ErrorCode.RESERVATION_LIMIT_EXCEEDED);
+                throw new ApplicationRequestException(e.getMessage(), ErrorCode.RESERVATION_LIMIT_EXCEEDED);
             }
 
             // 예매하려는 좌석에 대한 예매내역 조회
@@ -80,7 +80,7 @@ public class MovieReservationServiceImpl implements MovieReservationService {
                 // 예매 좌석 중복 내역 확인하기
                 reservationService.validateSeatAvailability(duplicateReservationCount);
             } catch (IllegalArgumentException e) { // 도메인 계층에서 발생한 오류 발생시 별도 처리
-                throw new CustomRequestException(e.getMessage(), ErrorCode.SEAT_ALREADY_RESERVED);
+                throw new ApplicationRequestException(e.getMessage(), ErrorCode.SEAT_ALREADY_RESERVED);
             }
 
             List<TicketReservation> ticketReservations = new ArrayList<>();
@@ -88,7 +88,7 @@ public class MovieReservationServiceImpl implements MovieReservationService {
                 // 예매 내역 생성
                 ticketReservations = reservationService.createTicketReservations(screeningSchedule, member, screenSeat, screenSeatLayout, seatCount);
             } catch (IllegalArgumentException e) { // 도메인 계층에서 발생한 오류 발생시 별도 처리
-                throw new CustomRequestException(e.getMessage(), ErrorCode.SEAT_NOT_FOUND);
+                throw new ApplicationRequestException(e.getMessage(), ErrorCode.SEAT_NOT_FOUND);
             }
 
             if(!ticketReservations.isEmpty()) {

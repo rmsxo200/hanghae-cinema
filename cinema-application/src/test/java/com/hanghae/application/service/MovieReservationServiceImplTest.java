@@ -4,7 +4,7 @@ import com.hanghae.application.TestDataFactory;
 import com.hanghae.application.dto.ApiResponse;
 import com.hanghae.application.dto.request.MovieReservationRequestDto;
 import com.hanghae.application.enums.ErrorCode;
-import com.hanghae.application.exception.CustomRequestException;
+import com.hanghae.application.exception.ApplicationRequestException;
 import com.hanghae.application.port.out.message.MessagePort;
 import com.hanghae.application.port.out.redis.RedisRateLimitPort;
 import com.hanghae.application.port.out.redis.RedissonLockPort;
@@ -131,7 +131,7 @@ class MovieReservationServiceImplTest {
             return null;
         }).when(reservationService).validateSeatAvailability(anyInt());
 
-        CustomRequestException exception = assertThrows(CustomRequestException.class, () ->
+        ApplicationRequestException exception = assertThrows(ApplicationRequestException.class, () ->
                 movieReservationService.saveMovieReservation(requestDto));
 
         // 응답 메시지 비교
@@ -156,7 +156,7 @@ class MovieReservationServiceImplTest {
         }).when(reservationService).validateReservationSeatLimit(anyInt(), anyInt());
 
 
-        CustomRequestException exception = assertThrows(CustomRequestException.class, () ->
+        ApplicationRequestException exception = assertThrows(ApplicationRequestException.class, () ->
                 movieReservationService.saveMovieReservation(requestDto));
 
         // 응답 메시지 확인
@@ -171,9 +171,9 @@ class MovieReservationServiceImplTest {
 
         // executeWithSeatsLocks 예상 동작 다시 정의
         when(redissonLockPort.executeWithSeatsLocks(anyLong(), anyList(), any()))
-                .thenThrow(new CustomRequestException("현재 좌석을 다른 사용자가 예매 처리 중입니다.", ErrorCode.SEAT_NOT_AVAILABLE));
+                .thenThrow(new ApplicationRequestException("현재 좌석을 다른 사용자가 예매 처리 중입니다.", ErrorCode.SEAT_NOT_AVAILABLE));
 
-        CustomRequestException exception = assertThrows(CustomRequestException.class, () ->
+        ApplicationRequestException exception = assertThrows(ApplicationRequestException.class, () ->
                 movieReservationService.saveMovieReservation(requestDto));
 
         // 응답 메시지 확인

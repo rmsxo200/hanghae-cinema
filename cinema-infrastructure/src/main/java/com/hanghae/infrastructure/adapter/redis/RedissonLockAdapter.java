@@ -1,7 +1,7 @@
 package com.hanghae.infrastructure.adapter.redis;
 
 import com.hanghae.application.enums.ErrorCode;
-import com.hanghae.application.exception.CustomRequestException;
+import com.hanghae.application.exception.ApplicationRequestException;
 import com.hanghae.application.port.out.redis.RedissonLockPort;
 import com.hanghae.domain.model.enums.ScreenSeat;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +39,7 @@ public class RedissonLockAdapter implements RedissonLockPort {
                     releaseLock(lock);
                 }
             } else {
-                throw new CustomRequestException("현재 좌석을 다른 사용자가 예매 처리 중입니다." + seat, ErrorCode.SEAT_NOT_AVAILABLE);
+                throw new ApplicationRequestException("현재 좌석을 다른 사용자가 예매 처리 중입니다." + seat, ErrorCode.SEAT_NOT_AVAILABLE);
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -64,7 +64,7 @@ public class RedissonLockAdapter implements RedissonLockPort {
                     releaseLocks(locks);
                 }
             } else {
-                throw new CustomRequestException("현재 좌석을 다른 사용자가 예매 처리 중입니다." + seats, ErrorCode.SEAT_NOT_AVAILABLE);
+                throw new ApplicationRequestException("현재 좌석을 다른 사용자가 예매 처리 중입니다." + seats, ErrorCode.SEAT_NOT_AVAILABLE);
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
